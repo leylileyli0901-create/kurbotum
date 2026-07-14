@@ -1,4 +1,4 @@
-import telebot # Büyük 'I' harfi küçük 'i' olarak düzeltildi!
+import telebot
 import os
 import sqlite3
 from datetime import datetime, timedelta
@@ -7,7 +7,7 @@ from threading import Thread
 from telebot import types
 
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
-ADMIN_ID = 6573624235 # Senin Telegram ID'n
+ADMIN_ID = 7864985805 # Yeni admin ID'n buraya tanımlandı!
 bot = telebot.TeleBot(API_TOKEN)
 
 # Veritabanı kurulumu
@@ -96,7 +96,6 @@ def add_stock(message):
         except Exception as e:
             bot.reply_to(message, f"Hata oluştu: {str(e)}")
 
-# Burası yarım kalmıştı, tamamen tamamlandı!
 @bot.message_handler(commands=['ekle'])
 def add_user(message):
     if str(message.from_user.id) == str(ADMIN_ID):
@@ -141,6 +140,5 @@ def list_users(message):
         except Exception as e:
             bot.reply_to(message, f"Liste hatasi: {e}")
 
-# Botun çökmesini engelleyen ve sürekli çalışmasını sağlayan döngü
 bot.infinity_polling(timeout=10, long_polling_timeout=5)
             
