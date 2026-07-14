@@ -40,7 +40,7 @@ def admin_panel(message):
 
 @bot.message_handler(commands=['ekle'])
 def add_user(message):
-    if message.from_user.id == ADMIN_ID:
+    if message.from_user.id == ADMIN_ID:7864985805
         parts = message.text.split()
         user_id, days = parts[1], int(parts[2])
         expiry = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
