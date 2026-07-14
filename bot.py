@@ -7,24 +7,22 @@ from threading import Thread
 from telebot import types
 
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
-ADMIN_ID = 123456789 # Buraya kendi Telegram ID'ni yaz!
+ADMIN_ID = 7864985805 # Senin Telegram ID'n buraya güvenle tanımlandı!
 bot = telebot.TeleBot(API_TOKEN)
 
 # Veritabanı kurulumu
 conn = sqlite3.connect('vpn_users.db', check_same_thread=False)
 cursor = conn.cursor()
-cursor.execute('''CREATE TABLE IF NOT EXISTS users 
-                  (id INTEGER PRIMARY KEY, username TEXT, expiry_date TEXT)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, expiry TEXT)''')
 conn.commit()
 
-# --- WEB SUNUCUSU (Render için) ---
+# Web sunucusu (Render için)
 app = Flask(__name__)
 @app.route('/')
-def home(): return "Bot 7/24 ayakta!"
+def home(): return "Bot 7/24 aktif!"
 def run(): app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 8080)))
 Thread(target=run).start()
 
-# --- MENÜ VE KOMUTLAR ---
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -33,25 +31,28 @@ def start(message):
 
 @bot.message_handler(func=lambda message: message.text == "👑 Admin Paneli")
 def admin_panel(message):
-    if message.from_user.id == ADMIN_ID:
-        bot.send_message(message.chat.id, "Admin Paneli:\n/ekle [ID] [Gün] - Kullanıcı ekle\n/liste - Kullanıcıları gör")
+    if str(message.from_user.id) == str(ADMIN_ID):
+        bot.send_message(message.chat.id, "Admin Komutları:\n/ekle [ID] [Gün] \n/liste")
     else:
-        bot.send_message(message.chat.id, "Bu yetkiniz yok!")
+        bot.send_message(message.chat.id, "Yetkiniz yok!")
 
 @bot.message_handler(commands=['ekle'])
 def add_user(message):
-    if message.from_user.id == ADMIN_ID=7864985805
-        parts = message.text.split()
-        user_id, days = parts[1], int(parts[2])
-        expiry = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
-        cursor.execute("INSERT OR REPLACE INTO users VALUES (?, ?, ?)", (user_id, "Kullanıcı", expiry))
-        conn.commit()
-        bot.reply_to(message, f"Kullanıcı {user_id} için {days} günlük erişim tanımlandı. Bitiş: {expiry}")
+    if str(message.from_user.id) == str(ADMIN_ID):
+        try:
+            parts = message.text.split()
+            uid, days = parts[1], int(parts[2])
+            expiry = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
+            cursor.execute("INSERT OR REPLACE INTO users VALUES (?, ?)", (uid, expiry))
+            conn.commit()
+            bot.reply_to(message, f"Kullanıcı {uid} eklendi. Bitiş: {expiry}")
+        except: 
+            bot.reply_to(message, "Hata! Kullanım: /ekle [ID] [Gün]")
 
 @bot.message_handler(commands=['liste'])
 def list_users(message):
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
-    bot.reply_to(message, str(users))
+    if str(message.from_user.id) == str(ADMIN_ID):
+        cursor.execute("SELECT * FROM users")
+        bot.reply_to(message, "Kullanıcılar:\n" + str(cursor.fetchall()))
 
 bot.infinity_polling()
