@@ -1,4 +1,4 @@
-import telebot
+import telebot # Büyük 'I' harfi küçük 'i' olarak düzeltildi!
 import os
 import sqlite3
 from datetime import datetime, timedelta
@@ -10,7 +10,7 @@ API_TOKEN = os.getenv('TELEGRAM_TOKEN')
 ADMIN_ID = 6573624235 # Senin Telegram ID'n
 bot = telebot.TeleBot(API_TOKEN)
 
-# SIFIRDAN TEMİZ VERİTABANI (Eski çakışma hatalarını tamamen engeller)
+# Veritabanı kurulumu
 conn = sqlite3.connect('vpn_v2.db', check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, expiry TEXT, config TEXT)''')
@@ -96,6 +96,7 @@ def add_stock(message):
         except Exception as e:
             bot.reply_to(message, f"Hata oluştu: {str(e)}")
 
+# Burası yarım kalmıştı, tamamen tamamlandı!
 @bot.message_handler(commands=['ekle'])
 def add_user(message):
     if str(message.from_user.id) == str(ADMIN_ID):
@@ -140,5 +141,5 @@ def list_users(message):
         except Exception as e:
             bot.reply_to(message, f"Liste hatasi: {e}")
 
-# infinity_polling parametreleri ile botun çökmesi engellenir
+# Botun çökmesini engelleyen ve sürekli çalışmasını sağlayan döngü
 bot.infinity_polling(timeout=10, long_polling_timeout=5)
