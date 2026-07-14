@@ -143,3 +143,4 @@ def list_users(message):
 
 # Botun çökmesini engelleyen ve sürekli çalışmasını sağlayan döngü
 bot.infinity_polling(timeout=10, long_polling_timeout=5)
+            
